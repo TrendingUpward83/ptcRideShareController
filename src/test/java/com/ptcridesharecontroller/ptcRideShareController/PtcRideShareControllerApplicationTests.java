@@ -36,62 +36,67 @@ import java.sql.Statement;
 class PtcRideShareControllerApplicationTests {
 
 	@Test
-	void carClassPresent() {
+	void carClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean carClassExists = false;
+		String carClassNameExpected = "Car";
+		String carClassNameActual;
 
 		//Act
 
-		try {
+		Car aCar = new Car(); //try to instanciate the car w/ default constructor
+		carClassNameActual = aCar.getClass().getSimpleName();
 
-			Car aCar = new Car(); //try to instanciate the car w/ default constructor
-		}
-		catch (ClassNotFoundException e) {
 
-			System.out.println("Error with creating Car object: "+ e);
+		if (carClassNameActual.equals(carClassNameExpected)){
+			carClassExists = true;
 		}
+
 		//Assert
-
-		assertTrue(carClassExists, "Car class does not exist");
+		assertTrue(carClassExists, "Car class cannot instantiate");
 	}
 
 	@Test
-	void userClassPresent() {
+	void userClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean userClassExists = false;
-
+		String userClassNameExpected = "User";
+		String userClassNameActual;
+		
 		//Act
-		try {
 
-			User aUser = new User(); //try to instanciate user car w/ default constructor
+		User aUser = new User(); //try to instanciate the user w/ default constructor
+		userClassNameActual = aUser.getClass().getSimpleName();
+	
+		if (userClassNameActual.equals(userClassNameExpected)){
+			userClassExists = true;
 		}
-		catch (ClassNotFoundException e) {
 
-			System.out.println("Error with creating User object: "+ e);
-		}
-		//Assert
-
-		assertTrue(userClassExists, "User class does not exist");
+		//Assert	
+		assertTrue(userClassExists, "User class cannot instantiate");
 	}
 
 	@Test
-	void rideClassPresent() {
+	void rideClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean rideClassExists = false;
+		String rideClassNameExpected = "Ride";
+		String rideClassNameActual;
+		
+		//Act
 
-				//Act
-		try {
+		Ride aRide = new Ride(); //try to instanciate the user w/ default constructor
+		rideClassNameActual = aRide.getClass().getSimpleName();
+	
+		if (rideClassNameActual.equals(rideClassNameExpected)){
+			rideClassExists = true;
+		}		
 
-			Ride aRide = new Ride(); //try to instanciate the user w/ default constructor
-		}
-		catch (ClassNotFoundException e) {
-
-			System.out.println("Error with creating User object: "+ e);
-		}
 		//Assert
-
-		assertTrue(rideClassExists, "ride class does not exist");
+		assertTrue(rideClassExists, "Ride class cannot instantiate");
 	}
+
+	
 	@Test
 	void requestARidePagePresent() {  //Request A ride page exists
 		//Arrange
