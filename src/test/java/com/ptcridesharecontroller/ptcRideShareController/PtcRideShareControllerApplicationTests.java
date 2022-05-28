@@ -12,6 +12,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ptcridesharecontroller.ptcRideShareController.RideShare.Car;
+import com.ptcridesharecontroller.ptcRideShareController.RideShare.Ride;
+import com.ptcridesharecontroller.ptcRideShareController.RideShare.User;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -96,7 +99,7 @@ class PtcRideShareControllerApplicationTests {
 		assertTrue(rideClassExists, "Ride class cannot instantiate");
 	}
 
-	
+
 	@Test
 	void requestARidePagePresent() {  //Request A ride page exists
 		//Arrange

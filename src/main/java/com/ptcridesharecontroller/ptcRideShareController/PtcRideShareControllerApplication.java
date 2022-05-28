@@ -25,6 +25,14 @@ public class PtcRideShareControllerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PtcRideShareControllerApplication.class, args);
+
+		//store logged in user information here : rider & driver ID, login & use through out. Create as a User or Custom object of some kind
+		//(an object that holds various parts of the user's data acquired by different queries & store them here)
+		//and reference the information on the various other app activities as needed.
+		//Thinking this will be holding an array/list of this object with a max size of 1; when user Logs in, their user object
+		//here is created & is added to the list. 
+		//if another user tries to login, first the app checks this list if already size ==1; user is denied login
+		//make sure to create a logout button/function on top of each activity so user can logout on all screens or where it makes sense
 	}
 
 }
