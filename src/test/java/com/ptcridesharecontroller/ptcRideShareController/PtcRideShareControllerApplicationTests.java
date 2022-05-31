@@ -6,11 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-
 import net.bytebuddy.agent.VirtualMachine.ForHotSpot.Connection.Response;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -45,9 +44,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("unused")  //can comment this out later
 @SpringBootTest
 class PtcRideShareControllerApplicationTests {
+
+
+	//@Autowired MockMvc mvc;
+ //	@MockBean Ride ride;
 
 	//@Autowired static MockMvc mvc;
 	//@MockBean Ride ride;
@@ -128,6 +131,11 @@ class PtcRideShareControllerApplicationTests {
 		//Assert
 		assertTrue(rideClassExists, "Ride class cannot instantiate");
 	}
+
+
+	@Test
+	void Test_RequestARidePostsRidesUponSubmission() {
+		//Arrange
 
 	@ParameterizedTest
 	@CsvSource({"Test Location, Dest Location, 2022-05-28, 0, 0, 0, 0"})
