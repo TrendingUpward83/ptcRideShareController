@@ -47,8 +47,7 @@ public class RideShareController {
         try {
 
             newRidePost = mapper.readValue(newRide, Ride.class);  //get the input values in the RequestBody as JSON & deserialize
-            String driverID = "4816c6dd-8f03-470e-9aa2-c711eb579e7a";
-            String riderID ="";
+            String driverID = "";
             float distance = 34.5f;
             float duration =3000f;
             float cost = 99.99f;
@@ -56,6 +55,7 @@ public class RideShareController {
             float rScore = 0f;
             Byte isTaken = 0;
             Byte isComplete =0;
+            int carID =99;
             newRidePost.setDriverID(driverID); //temporarily hardcoding a driverID 
             newRidePost.setDistance(distance); 
             newRidePost.setDuration(duration);
@@ -64,7 +64,7 @@ public class RideShareController {
             
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
-            String sql = "INSERT INTO dbo.Ride VALUES ('"+origin+"','"+dest+"','"+duration+"',"+distance+"','"+cost+"','"+driverID+"','"+riderID+"','"+dScore+"','"+rScore+"','"+rideDateTime+"','"+smoke+"','"+eat+"','"+talk+"','"+carseat+"','"+isTaken+"','"+isComplete+"')";
+            String sql = "INSERT INTO [dbo].[Ride] ([pickUpLocation],[destination],[driverID],[rideDate],[trait_smoking],[trait_eating],[trait_talking],[trait_carseat],[carID],[isTaken],[isCompleted])" +" VALUES ("+origin+"','"+dest+"','"+driverID+"','"+rideDateTime+"','"+smoke+"','"+eat+"','"+talk+"','"+carseat+"','"+carID+"','"+isTaken+"','"+isComplete+"')";
             stmnt.executeUpdate(sql); //insert new record into the DB
         }
         catch (SQLException e) {
