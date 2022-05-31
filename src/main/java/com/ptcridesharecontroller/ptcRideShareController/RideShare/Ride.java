@@ -13,7 +13,7 @@ public class Ride {
     String riderID;
     float driverScore;
     float riderScore;
-    Date rideDate; //used java.sql date
+    String rideDate; //used java.sql date
     Byte smoking;
     Byte eating;
     Byte talking;
@@ -124,12 +124,12 @@ public class Ride {
     }
 
 
-    public Date getRideDate() {
+    public String getRideDate() {
         return rideDate;
     }
 
 
-    public void setRideDate(Date rideDate) {
+    public void setRideDate(String rideDate) {
         this.rideDate = rideDate;
     }
 
@@ -201,7 +201,7 @@ public class Ride {
     }
 
 
-    public Ride(String pickUpLoc, String dest, String driverID,Date rideDate, Byte smoking, Byte eating, Byte talking,
+    public Ride(String pickUpLoc, String dest, String driverID,String rideDate, Byte smoking, Byte eating, Byte talking,
             Byte carseat) {
         
         this.pickUpLoc = pickUpLoc;
