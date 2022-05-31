@@ -1,7 +1,15 @@
 package com.ptcridesharecontroller.ptcRideShareController;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+
+import net.bytebuddy.agent.VirtualMachine.ForHotSpot.Connection.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.Car;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.Ride;
+import com.ptcridesharecontroller.ptcRideShareController.RideShare.RideShareController;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.User;
 
 import org.junit.jupiter.api.Test;
@@ -30,16 +39,37 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@SuppressWarnings("unused")
 @SpringBootTest
 class PtcRideShareControllerApplicationTests {
 
+	//@Autowired static MockMvc mvc;
+	//@MockBean Ride ride;
+	private static boolean needsCleaned = false; //checks to see if the database needs cleaned of any test Rides
+
+	@BeforeAll
+	public static void setup() throws Exception
+	{
+		//add setup here
+	}
+
+	@AfterAll
+	public static void cleanup() throws Exception
+	{
+		if(needsCleaned)
+		{
+			//TODO code to delete entries
+		}
+	}
+
 	@Test
-	void carClassPresent() throws ClassNotFoundException {
+	void Test_CarClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean carClassExists = false;
 		String carClassNameExpected = "Car";
@@ -60,7 +90,7 @@ class PtcRideShareControllerApplicationTests {
 	}
 
 	@Test
-	void userClassPresent() throws ClassNotFoundException {
+	void Test_UserClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean userClassExists = false;
 		String userClassNameExpected = "User";
@@ -80,7 +110,7 @@ class PtcRideShareControllerApplicationTests {
 	}
 
 	@Test
-	void rideClassPresent() throws ClassNotFoundException {
+	void Test_RideClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean rideClassExists = false;
 		String rideClassNameExpected = "Ride";
@@ -99,22 +129,42 @@ class PtcRideShareControllerApplicationTests {
 		assertTrue(rideClassExists, "Ride class cannot instantiate");
 	}
 
-
-	@Test
-	void requestARidePagePresent() {  //Request A ride page exists
+	@ParameterizedTest
+	@CsvSource({"Test Location, Dest Location, 2022-05-28, 0, 0, 0, 0"})
+	void Test_RequestARidePostsRidesUponSubmission(String origin, String dest, Date rideDate, Byte smoke, Byte eat, Byte talk, Byte carseat) {
 		//Arrange
+		Ride newRide = new Ride();
+		newRide.setPickUpLoc(origin);
+		newRide.setDest(dest);
+		newRide.setRideDate(rideDate);
+		newRide.setSmoking(smoke);
+		newRide.setEating(eat);
+		newRide.setTalking(talk);
+		newRide.setCarseat(carseat);
+
+		String json = TestManager.asJsonString(newRide);
 
 		//Act
+		try {
+			HttpClient client = HttpClient.newBuilder().build(); //arrange HttpClient
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://127.0.0.1:8080/driverpostaride")).headers("content-type", "text/plain;charset=UTF-8").POST(HttpRequest.BodyPublishers.ofString(json)).build();
+			HttpResponse response = client.send(request, BodyHandlers.ofString());
+			
+			//Assert
+			int expected = 200;
+			int actual = response.statusCode();
+			assertEquals(expected, actual, "Status code was not 200.\nReturned status code: " + actual);
+		} catch (IOException e) {
+			System.out.println("IO Exception in RequestARidePostsRides. Check Try-Catch");
+			assertTrue(false, "IOException in test");
+			//e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("Request interrupted");
+			assertTrue(false, "InterruptedException in test");
+			//e.printStackTrace();
+		}
 
-		//Assert
-
-	}
-	@Test
-	void requestARidePostsRidesUponSubmission() {
-		//Arrange
-		//Act
-		//Assert
-
+		
 	}
 
 	//Would like to have login tests sucessful but don't know how to get login status data from the DB right now w/out
