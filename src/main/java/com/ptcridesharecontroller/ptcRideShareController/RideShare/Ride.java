@@ -18,6 +18,7 @@ public class Ride {
     Byte eating;
     Byte talking;
     Byte carseat;
+    int carID;
     Byte isTaken;
     Byte isCompleted;
 
@@ -161,7 +162,14 @@ public class Ride {
     public void setTalking(Byte talking) {
         this.talking = talking;
     }
+    public int getCarID() {
+        return carID;
+    }
 
+
+    public void setCarID(int carID) {
+        this.carID = carID;
+    }
 
     public Byte getCarseat() {
         return carseat;
