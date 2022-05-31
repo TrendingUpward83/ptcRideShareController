@@ -136,7 +136,7 @@ class PtcRideShareControllerApplicationTests {
 	@Test
 	void Test_RequestARidePostsRidesUponSubmission() {
 		//Arrange
-
+	}
 	@ParameterizedTest
 	@CsvSource({"Test Location, Dest Location, 2022-05-28, 0, 0, 0, 0"})
 	void Test_RequestARidePostsRidesUponSubmission(String origin, String dest, String rideDate, Byte smoke, Byte eat, Byte talk, Byte carseat) {
