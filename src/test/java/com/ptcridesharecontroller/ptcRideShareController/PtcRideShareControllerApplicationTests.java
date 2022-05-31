@@ -1,7 +1,10 @@
 package com.ptcridesharecontroller.ptcRideShareController;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,8 +38,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@SuppressWarnings("unused")
 @SpringBootTest
 class PtcRideShareControllerApplicationTests {
+
+	@Autowired MockMvc mvc;
+	@MockBean Ride ride;
 
 	@Test
 	void Test_CarClassPresent() throws ClassNotFoundException {

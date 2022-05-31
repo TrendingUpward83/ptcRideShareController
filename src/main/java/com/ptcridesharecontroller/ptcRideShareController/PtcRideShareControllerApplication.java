@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.sql.*;
 
+@SuppressWarnings("unused")
 @SpringBootApplication
 public class PtcRideShareControllerApplication {
 
