@@ -1,7 +1,14 @@
 package com.ptcridesharecontroller.ptcRideShareController;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+
+import net.bytebuddy.agent.VirtualMachine.ForHotSpot.Connection.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.Car;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.Ride;
+import com.ptcridesharecontroller.ptcRideShareController.RideShare.RideShareController;
 import com.ptcridesharecontroller.ptcRideShareController.RideShare.User;
 
 import org.junit.jupiter.api.Test;
@@ -35,8 +43,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@SuppressWarnings("unused")
 @SpringBootTest
 class PtcRideShareControllerApplicationTests {
+
+	@Autowired static MockMvc mvc;
+	@MockBean Ride ride;
+
+	@BeforeAll
+	public static void setup() throws Exception
+	{
+		//add setup here
+	}
 
 	@Test
 	void carClassPresent() throws ClassNotFoundException {
@@ -112,9 +130,14 @@ class PtcRideShareControllerApplicationTests {
 	@Test
 	void requestARidePostsRidesUponSubmission() {
 		//Arrange
-		//Act
-		//Assert
+		Ride newRide = new Ride();
+		RideShareController controller = new RideShareController();
 
+		//Act
+		ResponseEntity<Ride> response = controller.postNewRide(TestManager.asJsonString(newRide));
+
+		//Assert
+		System.out.println(response);
 	}
 
 	//Would like to have login tests sucessful but don't know how to get login status data from the DB right now w/out
