@@ -39,7 +39,7 @@ import java.sql.Statement;
 class PtcRideShareControllerApplicationTests {
 
 	@Test
-	void carClassPresent() throws ClassNotFoundException {
+	void Test_CarClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean carClassExists = false;
 		String carClassNameExpected = "Car";
@@ -60,7 +60,7 @@ class PtcRideShareControllerApplicationTests {
 	}
 
 	@Test
-	void userClassPresent() throws ClassNotFoundException {
+	void Test_UserClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean userClassExists = false;
 		String userClassNameExpected = "User";
@@ -80,7 +80,7 @@ class PtcRideShareControllerApplicationTests {
 	}
 
 	@Test
-	void rideClassPresent() throws ClassNotFoundException {
+	void Test_RideClassPresent() throws ClassNotFoundException {
 		//Arrange
 		boolean rideClassExists = false;
 		String rideClassNameExpected = "Ride";
@@ -99,18 +99,8 @@ class PtcRideShareControllerApplicationTests {
 		assertTrue(rideClassExists, "Ride class cannot instantiate");
 	}
 
-
 	@Test
-	void requestARidePagePresent() {  //Request A ride page exists
-		//Arrange
-
-		//Act
-
-		//Assert
-
-	}
-	@Test
-	void requestARidePostsRidesUponSubmission() {
+	void Test_RequestARidePostsRidesUponSubmission() {
 		//Arrange
 		//Act
 		//Assert
