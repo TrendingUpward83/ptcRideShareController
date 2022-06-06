@@ -98,4 +98,43 @@ public class RideController {
         return new ResponseEntity<>(newRidePost,HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
+    public ResponseEntity<HashMap<Integer,User>> userLogin(@RequestParam(value = "eMail", defaultValue ="none") String uEmail){
+
+        HashMap<Integer,User> response = new HashMap<>(); //hold user if login successful; if not, remove from list
+        User loginUser = new User();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {           
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+            String sql = "SELECT * FROM [dbo].[AspNetUsers] WHERE UserName ='"+ uEmail+"'"; // look up user's entered login e-mail in the DB
+            ResultSet rslt = stmnt.executeQuery(sql);
+
+            while(rslt.next()){
+                loginUser.setUserEmail(rslt.getString("UserName"));
+                loginUser.setUserID(rslt.getString("Id"));
+                response.put(rslt.getRow(),loginUser);
+            }
+            con.close();
+            if (response.isEmpty()){
+                loginUser.setUserEmail("No Registered User found with e-mail: "+ uEmail);
+                response.put(0, loginUser);
+                return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
+                
+            }
+            else {
+                return new ResponseEntity<>(response,HttpStatus.OK); // if email found, return status code 200
+            }
+        }
+        catch (SQLException e) {
+            loginUser.setUserEmail("SQL Error  "+  e.toString());
+            response.put(1,loginUser);
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }
+        
+      
+    }
+
 }
