@@ -101,32 +101,49 @@ public class RideController {
     @RequestMapping(value = "/login", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
     public ResponseEntity<HashMap<Integer,User>> userLogin(@RequestParam(value = "eMail", defaultValue ="none") String uEmail){
 
-        HashMap<Integer,User> response = new HashMap<>(); //hold user if login successful; if not, remove from list
+        HashMap<Integer,User> response = new HashMap<>(); // Main List to ensure 1 user logged in only -hold user if login successful; if not, remove from list
+        HashMap<Integer,User> errorsMap = new HashMap<>(); //another List to hold and return error messages
         User loginUser = new User();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
 
-        try {           
+        try {   
+            System.out.println("List is currently at size: " + response.size());        
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
-            String sql = "SELECT * FROM [dbo].[AspNetUsers] WHERE UserName ='"+ uEmail+"'"; // look up user's entered login e-mail in the DB
+            String sql = "SELECT * FROM [dbo].[AspNetUsers] u JOIN [dbo].[UserProfile] p ON u.Id = p.userID WHERE u.UserName = '"+uEmail+"';";
             ResultSet rslt = stmnt.executeQuery(sql);
 
-            while(rslt.next()){
-                loginUser.setUserEmail(rslt.getString("UserName"));
-                loginUser.setUserID(rslt.getString("Id"));
-                response.put(rslt.getRow(),loginUser);
-            }
-            con.close();
-            if (response.isEmpty()){
-                loginUser.setUserEmail("No Registered User found with e-mail: "+ uEmail);
-                response.put(0, loginUser);
-                return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
-                
+            if (response.size() <1){
+                while(rslt.next()){ //get all user data from query
+                    loginUser.setUserEmail(rslt.getString("Email"));
+                    loginUser.setUserName(rslt.getString("UserName"));
+                    loginUser.setUserID(rslt.getString("Id"));
+                    loginUser.setUserFName(rslt.getString("name_first"));
+                    loginUser.setUserLName(rslt.getString("name_last"));
+                    loginUser.setuDriverScore(rslt.getFloat("driverRateScore"));
+                    loginUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
+                    loginUser.setIsDriver(rslt.getByte("active_driver"));
+                    loginUser.setuStudID(rslt.getInt("studentid_num"));
+                    response.put(rslt.getRow(),loginUser);
+                }
+                con.close();
+                    if (response.isEmpty()){
+                        loginUser.setUserEmail("No Registered User found with e-mail: "+ uEmail);
+                        errorsMap.put(1, loginUser);
+                        return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
+                        
+                    }
+                    else {
+                        return new ResponseEntity<>(response,HttpStatus.OK); // if email found, return status code 200
+                    }
             }
             else {
-                return new ResponseEntity<>(response,HttpStatus.OK); // if email found, return status code 200
+                loginUser.setUserEmail("A user is already logged in and should log out before proceeding");
+                errorsMap.put(1, loginUser);
+                return new ResponseEntity<>(errorsMap, HttpStatus.UNAUTHORIZED);
             }
+            
         }
         catch (SQLException e) {
             loginUser.setUserEmail("SQL Error  "+  e.toString());
