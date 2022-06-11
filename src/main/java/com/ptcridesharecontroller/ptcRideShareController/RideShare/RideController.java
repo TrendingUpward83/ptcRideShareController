@@ -109,11 +109,13 @@ public class RideController {
                 
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
-            String sql = "SELECT * FROM [dbo].[AspNetUsers] u JOIN [dbo].[UserProfile] p ON u.Id = p.userID WHERE u.UserName = '"+uEmail+"';";
+            //the sort DESC in the below query isn't working..
+            String sql = "SELECT * FROM [dbo].[AspNetUsers] u JOIN [dbo].[UserProfile] p ON u.Id = p.userID JOIN [dbo].[car]c ON u.id = c.driverID WHERE u.UserName = '"+uEmail+"' ORDER BY c.isActive DESC;";
             ResultSet rslt = stmnt.executeQuery(sql);
 
             
                 while(rslt.next()){ //get all user data from query
+                    loginUser.setCarIsActive(rslt.getByte("isActive"));
                     loginUser.setUserEmail(rslt.getString("Email"));
                     loginUser.setUserName(rslt.getString("UserName"));
                     loginUser.setUserID(rslt.getString("Id"));
@@ -123,6 +125,11 @@ public class RideController {
                     loginUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
                     loginUser.setIsDriver(rslt.getByte("active_driver"));
                     loginUser.setuStudID(rslt.getInt("studentid_num"));
+                    loginUser.setCarColor(rslt.getString("carColor"));
+                    loginUser.setCarID(rslt.getInt("carID"));
+                    loginUser.setCarMake(rslt.getString("carMake"));
+                    loginUser.setCarModel(rslt.getString("CarModel"));
+                    
                     
                 }
                 con.close();
@@ -135,7 +142,6 @@ public class RideController {
                         return new ResponseEntity<>(loginUser,HttpStatus.OK); // if email found, return status code 200
                     }
             
-
             
         }
         catch (SQLException e) {
