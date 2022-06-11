@@ -16,15 +16,18 @@ package com.ptcridesharecontroller.ptcRideShareController.RideShare;
         byte isDriver;
         Integer uStudID;
         //profile image? //TODO: handle profile image association & display
-    
+
+ 
+
         public User(){
             
         }
-    
+
+
         public User(String userEmail){
             this.userEmail = userEmail;
         }
-    
+
     
         public String getUserEmail() {
             return userEmail;

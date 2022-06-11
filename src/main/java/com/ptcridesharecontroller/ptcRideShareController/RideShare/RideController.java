@@ -115,7 +115,6 @@ public class RideController {
 
             
                 while(rslt.next()){ //get all user data from query
-                    loginUser.setCarIsActive(rslt.getByte("isActive"));
                     loginUser.setUserEmail(rslt.getString("Email"));
                     loginUser.setUserName(rslt.getString("UserName"));
                     loginUser.setUserID(rslt.getString("Id"));
@@ -125,12 +124,6 @@ public class RideController {
                     loginUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
                     loginUser.setIsDriver(rslt.getByte("active_driver"));
                     loginUser.setuStudID(rslt.getInt("studentid_num"));
-                    loginUser.setCarColor(rslt.getString("carColor"));
-                    loginUser.setCarID(rslt.getInt("carID"));
-                    loginUser.setCarMake(rslt.getString("carMake"));
-                    loginUser.setCarModel(rslt.getString("CarModel"));
-                    
-                    
                 }
                 con.close();
                     if (loginUser.getUserEmail().isEmpty()){
