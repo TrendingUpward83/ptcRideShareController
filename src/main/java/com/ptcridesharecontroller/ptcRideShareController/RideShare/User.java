@@ -16,15 +16,72 @@ package com.ptcridesharecontroller.ptcRideShareController.RideShare;
         byte isDriver;
         Integer uStudID;
         //profile image? //TODO: handle profile image association & display
-    
+
+            //Car details (only have if is driver)
+
+        Integer carID;
+        String carMake;
+        String carModel;
+        String carColor;
+        String carPlateNum;
+        Byte CarIsActive;
+
         public User(){
             
         }
     
+        public Byte getCarIsActive() {
+            return CarIsActive;
+        }
+        public void setCarIsActive(Byte carIsActive) {
+            CarIsActive = carIsActive;
+        }
+
+        public Integer getCarID() {
+            return carID;
+        }
+    
+        public void setCarID(Integer carID) {
+            this.carID = carID;
+        }
+    
+        public String getCarMake() {
+            return carMake;
+        }
+    
+        public void setCarMake(String carMake) {
+            this.carMake = carMake;
+        }
+    
+        public String getCarModel() {
+            return carModel;
+        }
+    
+        public void setCarModel(String carModel) {
+            this.carModel = carModel;
+        }
+    
+        public String getCarColor() {
+            return carColor;
+        }
+    
+        public void setCarColor(String carColor) {
+            this.carColor = carColor;
+        }
+    
+        public String getCarPlateNum() {
+            return carPlateNum;
+        }
+    
+        public void setCarPlateNum(String carPlateNum) {
+            this.carPlateNum = carPlateNum;
+        }
+        
+
         public User(String userEmail){
             this.userEmail = userEmail;
         }
-    
+
     
         public String getUserEmail() {
             return userEmail;
