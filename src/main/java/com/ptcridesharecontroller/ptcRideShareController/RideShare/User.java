@@ -17,12 +17,10 @@ package com.ptcridesharecontroller.ptcRideShareController.RideShare;
         Integer uStudID;
         //profile image? //TODO: handle profile image association & display
 
- 
 
         public User(){
             
         }
-
 
         public User(String userEmail){
             this.userEmail = userEmail;
