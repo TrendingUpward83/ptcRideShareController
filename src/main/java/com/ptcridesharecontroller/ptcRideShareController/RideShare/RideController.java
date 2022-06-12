@@ -110,7 +110,7 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
             //the sort DESC in the below query isn't working..
-            String sql = "SELECT * FROM [dbo].[AspNetUsers] u JOIN [dbo].[UserProfile] p ON u.Id = p.userID JOIN [dbo].[car]c ON u.id = c.driverID WHERE u.UserName = '"+uEmail+"' ORDER BY c.isActive DESC;";
+            String sql = "SELECT * FROM [dbo].[AspNetUsers] u JOIN [dbo].[UserProfile] p ON u.Id = p.userID WHERE u.UserName = '"+uEmail+"';";
             ResultSet rslt = stmnt.executeQuery(sql);
 
             
@@ -140,6 +140,53 @@ public class RideController {
         catch (SQLException e) {
             loginUser.setUserEmail("SQL Error  "+  e.toString());
             return new ResponseEntity<>(loginUser,HttpStatus.BAD_REQUEST);
+        }
+        
+      
+    }
+
+
+    @RequestMapping(value = "/car", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
+    public ResponseEntity<Car> carInfo(@RequestParam(value = "eMail", defaultValue ="none") String uEmail){
+
+        Car carInfo = new Car();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {   
+                
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+            //the sort DESC in the below query isn't working..
+            String sql = "SELECT TOP 1 * FROM [dbo].[AspNetUsers] u JOIN [dbo].[car]c ON u.id = c.driverID WHERE u.UserName = '"+uEmail+"' ORDER BY c.isActive DESC;";
+            ResultSet rslt = stmnt.executeQuery(sql);
+        
+
+            if (!rslt.wasNull()){
+
+                while(rslt.next()){ //get all user data from query
+                    carInfo.setCarID(rslt.getInt("carID"));
+                    carInfo.setCarColor(rslt.getString("carColor"));
+                    carInfo.setCarMake(rslt.getString("carMake"));
+                    carInfo.setCarModel(rslt.getString("carModel"));
+                    carInfo.setCarPlateNum(rslt.getString("carPlateNumber"));
+                    carInfo.setCarIsActive(rslt.getByte("isActive"));
+
+                }
+            
+            con.close();
+
+            return new ResponseEntity<>(carInfo,HttpStatus.OK); // if email found, return status code 200
+                             
+            }
+            else {
+                carInfo.setCarMake("No car exists for user.");
+                return new ResponseEntity<>(carInfo,HttpStatus.NO_CONTENT);
+            }
+        }
+        catch (SQLException e) {
+            carInfo.setCarMake("SQL Error  "+  e.toString());
+            return new ResponseEntity<>(carInfo,HttpStatus.BAD_REQUEST);
         }
         
       
