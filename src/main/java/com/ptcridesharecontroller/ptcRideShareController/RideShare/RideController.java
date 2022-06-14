@@ -36,7 +36,8 @@ public class RideController {
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
 
-        String driverID = newRidePost.getDriverID();
+        String driverID = "";
+        String riderID = "";
         String origin = "";
         String dest = "";
         String rideDateTime = "";
@@ -56,7 +57,20 @@ public class RideController {
         try {
 
             newRidePost = mapper.readValue(newRide, Ride.class);  //get the input values in the RequestBody as JSON & deserialize
-            driverID = newRidePost.getDriverID();
+            
+                if (newRidePost.getDriverID()==null){
+                    driverID = "NULL";
+                }
+                else {
+                    driverID = "'"+newRidePost.getDriverID()+"'";
+                }
+
+                if (newRidePost.getRiderID() ==null){
+                    riderID = "NULL";
+                }
+                else{
+                    riderID = "'"+newRidePost.getRiderID()+"'";
+                }
             origin = newRidePost.getPickUpLoc();
             dest = newRidePost.getDest();
             rideDateTime = newRidePost.getRideDate();
@@ -73,14 +87,14 @@ public class RideController {
             isTaken = newRidePost.getIsTaken();
             isComplete = newRidePost.getIsCompleted();
             carID = newRidePost.getCarID();
-            
+
             
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
             String sql = "INSERT INTO [dbo].[Ride] " + 
-            "([pickUpLocation],[destination],[driverID],[rideDate],[trait_smoking],[trait_eating],[trait_talking],[trait_carseat]," + 
+            "([pickUpLocation],[destination],[driverID],[riderID],[rideDate],[trait_smoking],[trait_eating],[trait_talking],[trait_carseat]," + 
             "[distance],[duration],[cost],[driverRateScore],[riderRatingScore],[carID],[isTaken],[isCompleted])" +
-            " VALUES ('"+origin+"','"+dest+"','"+driverID+"', CAST('"+rideDateTime+"' AS DATETIME),'"+smoke+"','"+eat+"','"+talk+"','"+carseat+
+            " VALUES ('"+origin+"','"+dest+"',"+driverID+","+riderID+", CAST('"+rideDateTime+"' AS DATETIME),'"+smoke+"','"+eat+"','"+talk+"','"+carseat+
             "','"+distance+"','"+duration+"','"+cost+"','"+dScore+"','"+rScore+"','"+carID+"','"+isTaken+"','"+isComplete+"')";
             stmnt.executeUpdate(sql); //insert new record into the DB
         }
