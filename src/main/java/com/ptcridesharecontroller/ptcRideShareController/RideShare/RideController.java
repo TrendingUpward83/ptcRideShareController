@@ -64,7 +64,7 @@ public class RideController {
             eat = newRidePost.getEating();
             talk = newRidePost.getTalking();
             carseat = newRidePost.getCarseat();
-
+            
             distance = newRidePost.getDistance();
             duration = newRidePost.getDuration();
             cost = newRidePost.getCost();
@@ -73,8 +73,8 @@ public class RideController {
             isTaken = newRidePost.getIsTaken();
             isComplete = newRidePost.getIsCompleted();
             carID = newRidePost.getCarID();
-
-
+            
+            
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
             String sql = "INSERT INTO [dbo].[Ride] " + 
