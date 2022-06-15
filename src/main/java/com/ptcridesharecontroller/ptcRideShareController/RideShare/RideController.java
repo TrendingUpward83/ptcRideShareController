@@ -27,7 +27,8 @@ import java.sql.*;
 @SuppressWarnings("unused")
 @RestController
 public class RideController {
-    
+    static Map<Integer, Ride> ViewAllRides = new HashMap<Integer, Ride>();
+    Ride allRides = new Ride();
     @RequestMapping(value = "/driverpostaride", method = RequestMethod.POST)
     public ResponseEntity<Ride> postNewRide(@RequestBody String newRide){
 
@@ -163,6 +164,56 @@ public class RideController {
             return new ResponseEntity<>(loginUser,HttpStatus.BAD_REQUEST);
         }
         
+    }
+
+    @RequestMapping(value = "/viewRides", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
+    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "ride", defaultValue ="viewRides") String uEmail){
+        List response = new ArrayList<Ride>();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {   
+                
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+            //the sort DESC in the below query isn't working..
+            String sql = "SELECT * FROM [dbo].[Ride] where Ride.rideID = '70';";
+            ResultSet rslt = stmnt.executeQuery(sql);
+
+            
+                while(rslt.next()){ //get all user data from query
+                    allRides = new Ride();
+                    allRides.setRideID(rslt.getInt("rideID"));
+                    allRides.setPickUpLoc(rslt.getString("pickUpLocation"));
+                    allRides.setDest(rslt.getString("destination"));
+                    allRides.setDuration(rslt.getFloat("duration"));
+                    allRides.setDistance(rslt.getFloat("distance"));
+                    allRides.setCost(rslt.getFloat("cost"));
+                    allRides.setDriverID(rslt.getString("driverID"));
+                    allRides.setRiderID(rslt.getString("riderID"));
+                    allRides.setDriverScore(rslt.getFloat("driverRateScore"));
+                    allRides.setRiderScore(rslt.getFloat("riderRatingScore"));
+                    allRides.setRideDate(rslt.getString("rideDate"));
+                    allRides.setSmoking(rslt.getByte("trait_smoking"));
+                    allRides.setEating(rslt.getByte("trait_eating"));
+                    allRides.setTalking(rslt.getByte("trait_talking"));
+                    allRides.setCarseat(rslt.getByte("trait_carseat"));
+                    allRides.setCarID(rslt.getInt("carID"));
+                    allRides.setIsTaken(rslt.getByte("isTaken"));
+                    allRides.setIsCompleted(rslt.getByte("isCompleted"));
+                    ViewAllRides.put(allRides.getRideID(), allRides);
+                }
+                con.close();
+            
+            response = new ArrayList<>(ViewAllRides.values());
+        }
+        catch (SQLException e) {
+            allRides.setRiderID("SQL Error  "+  e.toString());
+            return new ResponseEntity(allRides,HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<List<Ride>>(response, HttpStatus.OK);
+        
+      
     }
 
     @RequestMapping(value = "/car", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
