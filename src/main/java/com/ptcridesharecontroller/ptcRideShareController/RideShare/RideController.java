@@ -166,18 +166,42 @@ public class RideController {
         
     }
 
-    @RequestMapping(value = "/viewRides", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
-    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "ride", defaultValue ="viewRides") String uEmail){
+    @RequestMapping(value = "/viewRides", method = RequestMethod.GET) 
+    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "Origin", defaultValue ="") String pickup,@RequestParam(value = "Destination", defaultValue ="") String destination, @RequestParam(value = "DateTime", defaultValue ="") String date_Time,@RequestParam(value = "Rider", defaultValue ="") String rider,@RequestParam(value = "Driver", defaultValue ="") String driver){
         List response = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
+        String sql="";
 
         try {   
                 
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
-            //the sort DESC in the below query isn't working..
-            String sql = "SELECT * FROM [dbo].[Ride] where Ride.rideID = '70';";
+
+            if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && rider.isBlank() && driver.isBlank()){ //all rides
+
+                sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
+            }
+
+            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank()){ //show specific ride details
+                sql = "SELECT TOP (1) * FROM [dbo].[Ride] WHERE pickUpLocation LIKE '%"+pickup+"%' AND destination LIKE '%"+destination+"%' AND rideDate LIKE '%"+date_Time+"%'";
+            }
+
+            else if (!rider.isBlank()){ //rider get Rides
+                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+rider+"' ORDER BY rideDate DESC ";
+            }
+
+            else if (!driver.isBlank()){ //rider get Rides
+                sql = "SELECT * FROM [dbo].[Ride] WHERE driverID = '"+driver+"' ORDER BY rideDate DESC ";
+            }
+            else {
+                allRides.setRiderID("Invalid request sent.");
+            return new ResponseEntity(allRides,HttpStatus.OK);
+
+            }
+
+
+
             ResultSet rslt = stmnt.executeQuery(sql);
 
             
