@@ -167,7 +167,7 @@ public class RideController {
     }
 
     @RequestMapping(value = "/viewRides", method = RequestMethod.GET) 
-    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "Origin", defaultValue ="") String pickup,@RequestParam(value = "Destination", defaultValue ="") String destination, @RequestParam(value = "DateTime", defaultValue ="") String date_Time,@RequestParam(value = "Rider", defaultValue ="") String rider,@RequestParam(value = "Driver", defaultValue ="") String driver){
+    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "Origin", defaultValue ="") String pickup,@RequestParam(value = "Destination", defaultValue ="") String destination, @RequestParam(value = "DateTime", defaultValue ="") String date_Time,@RequestParam(value = "User", defaultValue ="") String user){
         List response = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
@@ -178,22 +178,19 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && rider.isBlank() && driver.isBlank()){ //all rides
+            if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && user.isBlank()){ //all rides
 
                 sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
             }
-
-            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank()){ //show specific ride details
+            //date can be sent as 5/26/2022
+            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank()&& user.isBlank()){ //show specific ride details
                 sql = "SELECT TOP (1) * FROM [dbo].[Ride] WHERE pickUpLocation LIKE '%"+pickup+"%' AND destination LIKE '%"+destination+"%' AND rideDate LIKE '%"+date_Time+"%'";
             }
 
-            else if (!rider.isBlank()){ //rider get Rides
-                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+rider+"' ORDER BY rideDate DESC ";
+            else if (!user.isBlank()&&pickup.isBlank() && destination.isBlank() && date_Time.isBlank()){ //rider get Rides
+                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+user+"' OR driverID = '"+user+"' ORDER BY rideDate DESC ";
             }
 
-            else if (!driver.isBlank()){ //rider get Rides
-                sql = "SELECT * FROM [dbo].[Ride] WHERE driverID = '"+driver+"' ORDER BY rideDate DESC ";
-            }
             else {
                 allRides.setRiderID("Invalid request sent.");
             return new ResponseEntity(allRides,HttpStatus.OK);
