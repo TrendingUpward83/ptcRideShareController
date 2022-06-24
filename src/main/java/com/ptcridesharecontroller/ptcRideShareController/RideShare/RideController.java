@@ -17,22 +17,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.sql.*;
 
 @SuppressWarnings("unused")
 @RestController
 public class RideController {
-    static Map<Integer, Ride> ViewAllRides = new HashMap<Integer, Ride>();
-    Ride allRides = new Ride();
+    
+    
+
     @RequestMapping(value = "/driverpostaride", method = RequestMethod.POST)
     public ResponseEntity<Ride> postNewRide(@RequestBody String newRide){
 
         //Reponses to check to confirm ride data is posted- get the ride data posted
+
         Ride newRidePost = new Ride();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
@@ -168,6 +174,8 @@ public class RideController {
 
     @RequestMapping(value = "/viewRides", method = RequestMethod.GET) 
     public ResponseEntity<List<Ride>> AllRides(){
+        Ride allRides = new Ride();
+        Map<Integer, Ride> ViewAllRides = new HashMap<Integer, Ride>();
         List response = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
@@ -290,9 +298,7 @@ public class RideController {
                     aUser.setUserLName(rslt.getString("name_last"));
                     aUser.setuDriverScore(rslt.getFloat("driverRateScore"));
                     aUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
-                    aUser.setIsDriver(rslt.getByte("active_driver"));
-                
-
+                    aUser.setIsDriver(rslt.getByte("active_driver"));    
                 }
             
             con.close();
@@ -308,14 +314,14 @@ public class RideController {
         catch (SQLException e) {
             aUser.setUserFName("SQL Error  "+  e.toString());
             return new ResponseEntity<>(aUser,HttpStatus.BAD_REQUEST);
-        }
-        
+        }  
       
     }
-
     @RequestMapping(value = "/viewMyRides", method = RequestMethod.GET) 
         
-        public ResponseEntity<List<Ride>> MyRides(@RequestParam(value = "User") String user){
+    public ResponseEntity<List<Ride>> MyRides(@RequestParam(value = "User") String user){
+        Ride allRides = new Ride();
+        Map<Integer, Ride> ViewMyRides = new HashMap<Integer, Ride>();
         List myRidesResponse = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
@@ -351,11 +357,11 @@ public class RideController {
                     allRides.setCarID(rslt.getInt("carID"));
                     allRides.setIsTaken(rslt.getByte("isTaken"));
                     allRides.setIsCompleted(rslt.getByte("isCompleted"));
-                    ViewAllRides.put(allRides.getRideID(), allRides);
+                    ViewMyRides.put(allRides.getRideID(), allRides);
                 }
                 con.close();
             
-            myRidesResponse = new ArrayList<>(ViewAllRides.values());
+            myRidesResponse = new ArrayList<>(ViewMyRides.values());
         }
         catch (SQLException e) {
             allRides.setRiderID("SQL Error  "+  e.toString());
@@ -366,5 +372,58 @@ public class RideController {
       
     }
 
+    @RequestMapping(value="/acceptPosted/rider")  //posted already has driver, get rider details  (SEND the WHOLE ride)
+    public ResponseEntity<Ride> riderAccept(@RequestBody Ride accRide, @PathVariable String rider) {
+        
+        //Reponses to check to confirm ride data is posted- get the ride data posted
+        
+        Ride updtRide = new Ride();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        String sql;
+        Integer rideID = accRide.getRideID();
 
+ 
+        try {
+            
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+        
+            sql = "UPDATE [dbo].[Ride] SET riderID ='"+ rider+ "' WHERE rideID= '"+rideID+"';";
+              
+            ResultSet rslt = stmnt.executeQuery(sql);
+
+            
+            while(rslt.next()){ //get all user data from query
+                updtRide = new Ride();
+                updtRide.setRideID(rslt.getInt("rideID"));
+                updtRide.setPickUpLoc(rslt.getString("pickUpLocation"));
+                updtRide.setDest(rslt.getString("destination"));
+                updtRide.setDuration(rslt.getFloat("duration"));
+                updtRide.setDistance(rslt.getFloat("distance"));
+                updtRide.setCost(rslt.getFloat("cost"));
+                updtRide.setDriverID(rslt.getString("driverID"));
+                updtRide.setRiderID(rslt.getString("riderID"));
+                updtRide.setDriverScore(rslt.getFloat("driverRateScore"));
+                updtRide.setRiderScore(rslt.getFloat("riderRatingScore"));
+                updtRide.setRideDate(rslt.getString("rideDate"));
+                updtRide.setSmoking(rslt.getByte("trait_smoking"));
+                updtRide.setEating(rslt.getByte("trait_eating"));
+                updtRide.setTalking(rslt.getByte("trait_talking"));
+                updtRide.setCarseat(rslt.getByte("trait_carseat"));
+                updtRide.setCarID(rslt.getInt("carID"));
+                updtRide.setIsTaken(rslt.getByte("isTaken"));
+                updtRide.setIsCompleted(rslt.getByte("isCompleted"));
+            
+
+            }
+            con.close();
+
+        }
+        catch (SQLException e) {
+            updtRide.setRiderID("SQL Error  "+  e.toString());
+            return new ResponseEntity<>(updtRide,HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(updtRide, HttpStatus.OK);
+
+    }
 }
