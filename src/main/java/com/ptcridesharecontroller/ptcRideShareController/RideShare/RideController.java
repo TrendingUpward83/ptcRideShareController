@@ -315,8 +315,8 @@ public class RideController {
 
     @RequestMapping(value = "/viewMyRides", method = RequestMethod.GET) 
         
-        public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "User") String user){
-        List response = new ArrayList<Ride>();
+        public ResponseEntity<List<Ride>> MyRides(@RequestParam(value = "User") String user){
+        List myRidesResponse = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
         String sql="";
@@ -355,13 +355,13 @@ public class RideController {
                 }
                 con.close();
             
-            response = new ArrayList<>(ViewAllRides.values());
+            myRidesResponse = new ArrayList<>(ViewAllRides.values());
         }
         catch (SQLException e) {
             allRides.setRiderID("SQL Error  "+  e.toString());
             return new ResponseEntity(allRides,HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<List<Ride>>(response, HttpStatus.OK);
+        return new ResponseEntity<List<Ride>>(myRidesResponse, HttpStatus.OK);
         
       
     }
