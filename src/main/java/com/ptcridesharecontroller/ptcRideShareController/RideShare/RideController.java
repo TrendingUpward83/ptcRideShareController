@@ -167,7 +167,7 @@ public class RideController {
     }
 
     @RequestMapping(value = "/viewRides", method = RequestMethod.GET) 
-    public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "Origin", defaultValue ="") String pickup,@RequestParam(value = "Destination", defaultValue ="") String destination, @RequestParam(value = "DateTime", defaultValue ="") String date_Time,@RequestParam(value = "User", defaultValue ="") String user){
+    public ResponseEntity<List<Ride>> AllRides(){
         List response = new ArrayList<Ride>();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
         ObjectMapper mapper = new ObjectMapper();
@@ -178,25 +178,9 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            if (user != null || !user.isEmpty()){ //rider get Rides
-                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+user+"' OR driverID = '"+user+"' ORDER BY rideDate DESC ";
-            }
-
-
-            else if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && user.isBlank()){ //all rides
-
-                sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
-            }
-            //date can be sent as 5/26/2022
-            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank() && user.isBlank()){ //show specific ride details
-                sql = "SELECT TOP (1) * FROM [dbo].[Ride] WHERE pickUpLocation LIKE '%"+pickup+"%' AND destination LIKE '%"+destination+"%' AND rideDate LIKE '%"+date_Time+"%'";
-            }
-
-            else {
-                allRides.setRiderID("Invalid request sent.");
-            return new ResponseEntity(allRides,HttpStatus.OK);
-
-            }
+   
+            sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
+            
 
 
             ResultSet rslt = stmnt.executeQuery(sql);
@@ -329,6 +313,58 @@ public class RideController {
       
     }
 
+    @RequestMapping(value = "/viewMyRides", method = RequestMethod.GET) 
+        
+        public ResponseEntity<List<Ride>> AllRides(@RequestParam(value = "User") String user){
+        List response = new ArrayList<Ride>();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        ObjectMapper mapper = new ObjectMapper();
+        String sql="";
+
+        try {   
+                
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+
+            sql = "SELECT * FROM [dbo].[Ride] WHERE driverID ='"+user+"' OR riderID = '"+user+"';";
+
+            ResultSet rslt = stmnt.executeQuery(sql);
+
+            
+                while(rslt.next()){ //get all user data from query
+                    allRides = new Ride();
+                    allRides.setRideID(rslt.getInt("rideID"));
+                    allRides.setPickUpLoc(rslt.getString("pickUpLocation"));
+                    allRides.setDest(rslt.getString("destination"));
+                    allRides.setDuration(rslt.getFloat("duration"));
+                    allRides.setDistance(rslt.getFloat("distance"));
+                    allRides.setCost(rslt.getFloat("cost"));
+                    allRides.setDriverID(rslt.getString("driverID"));
+                    allRides.setRiderID(rslt.getString("riderID"));
+                    allRides.setDriverScore(rslt.getFloat("driverRateScore"));
+                    allRides.setRiderScore(rslt.getFloat("riderRatingScore"));
+                    allRides.setRideDate(rslt.getString("rideDate"));
+                    allRides.setSmoking(rslt.getByte("trait_smoking"));
+                    allRides.setEating(rslt.getByte("trait_eating"));
+                    allRides.setTalking(rslt.getByte("trait_talking"));
+                    allRides.setCarseat(rslt.getByte("trait_carseat"));
+                    allRides.setCarID(rslt.getInt("carID"));
+                    allRides.setIsTaken(rslt.getByte("isTaken"));
+                    allRides.setIsCompleted(rslt.getByte("isCompleted"));
+                    ViewAllRides.put(allRides.getRideID(), allRides);
+                }
+                con.close();
+            
+            response = new ArrayList<>(ViewAllRides.values());
+        }
+        catch (SQLException e) {
+            allRides.setRiderID("SQL Error  "+  e.toString());
+            return new ResponseEntity(allRides,HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<List<Ride>>(response, HttpStatus.OK);
+        
+      
+    }
 
 
 }
