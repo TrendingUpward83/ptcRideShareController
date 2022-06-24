@@ -178,7 +178,12 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && user.isBlank()){ //all rides
+            if (!user.isBlank()){ //rider get Rides
+                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+user+"' OR driverID = '"+user+"' ORDER BY rideDate DESC ";
+            }
+
+
+            else if (pickup.isBlank() && destination.isBlank() && date_Time.isBlank() && user.isBlank()){ //all rides
 
                 sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
             }
@@ -187,16 +192,11 @@ public class RideController {
                 sql = "SELECT TOP (1) * FROM [dbo].[Ride] WHERE pickUpLocation LIKE '%"+pickup+"%' AND destination LIKE '%"+destination+"%' AND rideDate LIKE '%"+date_Time+"%'";
             }
 
-            else if (!user.isBlank()&&pickup.isBlank() && destination.isBlank() && date_Time.isBlank()){ //rider get Rides
-                sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+user+"' OR driverID = '"+user+"' ORDER BY rideDate DESC ";
-            }
-
             else {
                 allRides.setRiderID("Invalid request sent.");
             return new ResponseEntity(allRides,HttpStatus.OK);
 
             }
-
 
 
             ResultSet rslt = stmnt.executeQuery(sql);
