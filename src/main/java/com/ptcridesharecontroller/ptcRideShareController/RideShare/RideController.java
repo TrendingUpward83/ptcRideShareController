@@ -178,7 +178,7 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            if (!user.isBlank()){ //rider get Rides
+            if (user != null || !user.isEmpty()){ //rider get Rides
                 sql = "SELECT * FROM [dbo].[Ride] WHERE riderID = '"+user+"' OR driverID = '"+user+"' ORDER BY rideDate DESC ";
             }
 
@@ -188,7 +188,7 @@ public class RideController {
                 sql = "SELECT * FROM [dbo].[Ride] ORDER BY rideDate Desc;";
             }
             //date can be sent as 5/26/2022
-            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank()&& user.isBlank()){ //show specific ride details
+            else if (!pickup.isBlank() && !destination.isBlank() && !date_Time.isBlank() && user.isBlank()){ //show specific ride details
                 sql = "SELECT TOP (1) * FROM [dbo].[Ride] WHERE pickUpLocation LIKE '%"+pickup+"%' AND destination LIKE '%"+destination+"%' AND rideDate LIKE '%"+date_Time+"%'";
             }
 
@@ -278,6 +278,52 @@ public class RideController {
         catch (SQLException e) {
             carInfo.setCarMake("SQL Error  "+  e.toString());
             return new ResponseEntity<>(carInfo,HttpStatus.BAD_REQUEST);
+        }
+        
+      
+    }
+
+    @RequestMapping(value = "/user", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
+    public ResponseEntity<User> userInfo(@RequestParam(value = "User", defaultValue ="none") String userID){
+
+        User aUser = new User();
+        String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {   
+                
+            Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+            Statement stmnt = con.createStatement();
+            //the sort DESC in the below query isn't working..
+            String sql = "SELECT * FROM [dbo].[UserProfile] WHERE userID = '"+userID+"';";
+            ResultSet rslt = stmnt.executeQuery(sql);
+        
+
+            if (!rslt.wasNull()){
+
+                while(rslt.next()){ //get all user data from query
+                    aUser.setUserFName(rslt.getString("name_first"));
+                    aUser.setUserLName(rslt.getString("name_last"));
+                    aUser.setuDriverScore(rslt.getFloat("driverRateScore"));
+                    aUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
+                    aUser.setIsDriver(rslt.getByte("active_driver"));
+                
+
+                }
+            
+            con.close();
+
+            return new ResponseEntity<>(aUser,HttpStatus.OK); // if email found, return status code 200
+                             
+            }
+            else {
+                aUser.setUserFName("No user with this ID exists.");
+                return new ResponseEntity<>(aUser,HttpStatus.NO_CONTENT);
+            }
+        }
+        catch (SQLException e) {
+            aUser.setUserFName("SQL Error  "+  e.toString());
+            return new ResponseEntity<>(aUser,HttpStatus.BAD_REQUEST);
         }
         
       
