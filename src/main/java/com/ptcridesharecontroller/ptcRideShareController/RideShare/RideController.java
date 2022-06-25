@@ -229,8 +229,8 @@ public class RideController {
       
     }
 
-    @RequestMapping(value = "/car", method = RequestMethod.GET) //creating response LIST with max value of 1 user so no more than 1 user can login
-    public ResponseEntity<Car> carInfo(@RequestParam(value = "eMail", defaultValue ="none") String uEmail){
+    @RequestMapping(value = "/car", method = RequestMethod.GET) 
+    public ResponseEntity<Car> carInfo(@RequestParam(value = "userID", defaultValue ="none") String uID){
 
         Car carInfo = new Car();
         String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" ;
@@ -241,7 +241,7 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
             //the sort DESC in the below query isn't working..
-            String sql = "SELECT TOP 1 * FROM [dbo].[AspNetUsers] u JOIN [dbo].[car]c ON u.id = c.driverID WHERE u.UserName = '"+uEmail+"' ORDER BY c.isActive DESC;";
+            String sql = "SELECT * FROM [dbo].[car] WHERE driverID = '"+uID+"' ;";
             ResultSet rslt = stmnt.executeQuery(sql);
         
 
