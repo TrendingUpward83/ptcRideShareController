@@ -332,7 +332,7 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            sql = "SELECT * FROM [dbo].[Ride] WHERE driverID ='"+user+"' OR riderID = '"+user+"';";
+            sql = "SELECT * FROM [dbo].[Ride] WHERE driverID ='"+user+"' OR riderID = '"+user+"' AND isCompleted =0;";
 
             ResultSet rslt = stmnt.executeQuery(sql);
 
@@ -442,7 +442,7 @@ public class RideController {
       Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
       Statement stmnt = con.createStatement();
 
-      putSql = "UPDATE Ride SET riderID ='" + driver + "', isTaken = 1 WHERE rideID = '" + accRideId + "';"; //send the update command with the parameters
+      putSql = "UPDATE Ride SET driverID ='" + driver + "', isTaken = 1 WHERE rideID = '" + accRideId + "';"; //send the update command with the parameters
       stmnt.executeUpdate(putSql);
 
       rideSql = "SELECT * FROM Ride WHERE rideID = " + accRideId;
