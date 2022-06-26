@@ -481,5 +481,127 @@ public class RideController {
 
   }
 
+  @RequestMapping(value = "/rateRide/Driver", method = RequestMethod.PUT) //rider rate driver and complete ride if driver already rated(will send 'complete' if so)
+  public ResponseEntity<Ride> rateDriver(@RequestParam(value = "accRideId") String accRideId,
+      @RequestParam(value = "rating") Integer driversRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
+
+    //Reponses to check to confirm ride data is posted- get the ride data posted
+
+    Ride updtRide = new Ride();
+    String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+    String putSql ="";
+    String rideSql;
+
+    try {
+
+      Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+      Statement stmnt = con.createStatement();
+
+      if(completed ==0){
+        putSql = "UPDATE Ride SET driverRateScore ='" + driversRating + "' WHERE rideID = '" + accRideId + "';"; //send the update command with the parameters
+      }
+      else if (completed ==1){
+        putSql = "UPDATE Ride SET driverRateScore ='" + driversRating + "', isCompleted = '"+1+"' WHERE rideID = '" + accRideId + "';";
+      }
+      
+      stmnt.executeUpdate(putSql);
+
+      rideSql = "SELECT * FROM Ride WHERE rideID = " + accRideId;
+
+      ResultSet rslt = stmnt.executeQuery(rideSql);
+
+      while (rslt.next()) { //get the updated record
+        updtRide = new Ride();
+        updtRide.setRideID(rslt.getInt("rideID"));
+        updtRide.setPickUpLoc(rslt.getString("pickUpLocation"));
+        updtRide.setDest(rslt.getString("destination"));
+        updtRide.setDuration(rslt.getFloat("duration"));
+        updtRide.setDistance(rslt.getFloat("distance"));
+        updtRide.setCost(rslt.getFloat("cost"));
+        updtRide.setDriverID(rslt.getString("driverID"));
+        updtRide.setRiderID(rslt.getString("riderID"));
+        updtRide.setDriverScore(rslt.getFloat("driverRateScore"));
+        updtRide.setRiderScore(rslt.getFloat("riderRatingScore"));
+        updtRide.setRideDate(rslt.getString("rideDate"));
+        updtRide.setSmoking(rslt.getByte("trait_smoking"));
+        updtRide.setEating(rslt.getByte("trait_eating"));
+        updtRide.setTalking(rslt.getByte("trait_talking"));
+        updtRide.setCarseat(rslt.getByte("trait_carseat"));
+        updtRide.setCarID(rslt.getInt("carID"));
+        updtRide.setIsTaken(rslt.getByte("isTaken"));
+        updtRide.setIsCompleted(rslt.getByte("isCompleted"));
+
+      }
+      con.close();
+
+    } catch (SQLException e) {
+      updtRide.setRiderID("SQL Error  " + e.toString());
+      return new ResponseEntity<>(updtRide, HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(updtRide, HttpStatus.OK);
+
+  }
+  @RequestMapping(value = "/rateRide/Rider", method = RequestMethod.PUT) //rider rate driver and complete ride if driver already rated(will send 'complete' if so)
+  public ResponseEntity<Ride> rateRider(@RequestParam(value = "accRideId") String accRideId,
+      @RequestParam(value = "rating") Integer ridersRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
+
+    //Reponses to check to confirm ride data is posted- get the ride data posted
+
+    Ride updtRide = new Ride();
+    String connectionURL = "jdbc:sqlserver://jdsteltz.database.windows.net:1433;database=EnterpriseApps;user=jdsteltz@jdsteltz;password=Dawson226!;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+    String putSql ="";
+    String rideSql;
+
+    try {
+
+      Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
+      Statement stmnt = con.createStatement();
+
+      if(completed ==0){
+        putSql = "UPDATE Ride SET riderRatingScore ='" + ridersRating + "' WHERE rideID = '" + accRideId + "';"; //send the update command with the parameters
+      }
+      else if (completed ==1){
+        putSql = "UPDATE Ride SET riderRatingScore ='" + ridersRating + "', isCompleted = '"+1+"' WHERE rideID = '" + accRideId + "';";
+      }
+      
+      stmnt.executeUpdate(putSql);
+
+      rideSql = "SELECT * FROM Ride WHERE rideID = " + accRideId;
+
+      ResultSet rslt = stmnt.executeQuery(rideSql);
+
+      while (rslt.next()) { //get the updated record
+        updtRide = new Ride();
+        updtRide.setRideID(rslt.getInt("rideID"));
+        updtRide.setPickUpLoc(rslt.getString("pickUpLocation"));
+        updtRide.setDest(rslt.getString("destination"));
+        updtRide.setDuration(rslt.getFloat("duration"));
+        updtRide.setDistance(rslt.getFloat("distance"));
+        updtRide.setCost(rslt.getFloat("cost"));
+        updtRide.setDriverID(rslt.getString("driverID"));
+        updtRide.setRiderID(rslt.getString("riderID"));
+        updtRide.setDriverScore(rslt.getFloat("driverRateScore"));
+        updtRide.setRiderScore(rslt.getFloat("riderRatingScore"));
+        updtRide.setRideDate(rslt.getString("rideDate"));
+        updtRide.setSmoking(rslt.getByte("trait_smoking"));
+        updtRide.setEating(rslt.getByte("trait_eating"));
+        updtRide.setTalking(rslt.getByte("trait_talking"));
+        updtRide.setCarseat(rslt.getByte("trait_carseat"));
+        updtRide.setCarID(rslt.getInt("carID"));
+        updtRide.setIsTaken(rslt.getByte("isTaken"));
+        updtRide.setIsCompleted(rslt.getByte("isCompleted"));
+
+      }
+      con.close();
+
+    } catch (SQLException e) {
+      updtRide.setRiderID("SQL Error  " + e.toString());
+      return new ResponseEntity<>(updtRide, HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(updtRide, HttpStatus.OK);
+
+  }
+
+
 
 }
