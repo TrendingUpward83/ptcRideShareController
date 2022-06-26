@@ -15,8 +15,17 @@ package com.ptcridesharecontroller.ptcRideShareController.RideShare;
         float uRiderScore;
         byte isDriver;
         Integer uStudID;
+        String profileImgFile;
         //profile image? //TODO: handle profile image association & display
 
+
+        public String getProfileImgFile() {
+            return profileImgFile;
+        }
+
+        public void setProfileImgFile(String profileImgFile) {
+            this.profileImgFile = profileImgFile;
+        }
 
         public User(){
             

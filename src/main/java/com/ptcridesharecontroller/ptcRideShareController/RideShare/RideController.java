@@ -298,6 +298,7 @@ public class RideController {
                     aUser.setuDriverScore(rslt.getFloat("driverRateScore"));
                     aUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
                     aUser.setIsDriver(rslt.getByte("active_driver"));    
+                    aUser.setProfileImgFile(rslt.getString("profile_image"));
                 }
             
             con.close();
