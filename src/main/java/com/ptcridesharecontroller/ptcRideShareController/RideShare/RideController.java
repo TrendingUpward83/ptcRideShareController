@@ -483,7 +483,7 @@ public class RideController {
 
   @RequestMapping(value = "/rateRide/Driver", method = RequestMethod.PUT) //rider rate driver and complete ride if driver already rated(will send 'complete' if so)
   public ResponseEntity<Ride> rateDriver(@RequestParam(value = "accRideId") String accRideId,
-      @RequestParam(value = "rating") Integer driversRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
+      @RequestParam(value = "rating") float driversRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
 
     //Reponses to check to confirm ride data is posted- get the ride data posted
 
@@ -543,7 +543,7 @@ public class RideController {
   }
   @RequestMapping(value = "/rateRide/Rider", method = RequestMethod.PUT) //rider rate driver and complete ride if driver already rated(will send 'complete' if so)
   public ResponseEntity<Ride> rateRider(@RequestParam(value = "accRideId") String accRideId,
-      @RequestParam(value = "rating") Integer ridersRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
+      @RequestParam(value = "rating") float ridersRating, @RequestParam(value = "complete", defaultValue = "0") byte completed) {
 
     //Reponses to check to confirm ride data is posted- get the ride data posted
 
