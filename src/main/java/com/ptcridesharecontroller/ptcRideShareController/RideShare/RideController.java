@@ -152,6 +152,7 @@ public class RideController {
                     loginUser.setuRiderScore(rslt.getFloat("riderRatingScore"));
                     loginUser.setIsDriver(rslt.getByte("active_driver"));
                     loginUser.setuStudID(rslt.getInt("studentid_num"));
+                    loginUser.setProfileImgFile(rslt.getString("profile_image"));
                 }
                 con.close();
                     if (loginUser.getUserEmail().isEmpty()){
@@ -187,7 +188,7 @@ public class RideController {
             Statement stmnt = con.createStatement();
 
    
-            sql = "SELECT * FROM [dbo].[Ride] WHERE isCompleted = 0 ORDER BY pickUpLocation, rideDate Desc;";
+            sql = "SELECT * FROM [dbo].[Ride] WHERE isCompleted = 0 ORDER BY pickUpLocation;";
             
 
             ResultSet rslt = stmnt.executeQuery(sql);
@@ -332,7 +333,7 @@ public class RideController {
             Connection con = DriverManager.getConnection(connectionURL); //connect to the DB
             Statement stmnt = con.createStatement();
 
-            sql = "SELECT * FROM [dbo].[Ride] WHERE driverID ='"+user+"' OR riderID = '"+user+"' AND isCompleted = 0 ORDER BY pickUpLocation, rideDate Desc;";
+            sql = "SELECT * FROM [dbo].[Ride] WHERE driverID ='"+user+"' OR riderID = '"+user+"' AND isCompleted = 0 ORDER BY pickUpLocation;";
 
             ResultSet rslt = stmnt.executeQuery(sql);
 
